@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WHALE FLOW - Solana Whale Tracker</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000000;
+      color: #FFD700;
+      font-family: 'Courier New', monospace;
+      overflow: hidden;
+      font-size: 48px;
+      line-height: 1.8;
+    }
+
+    .container {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      font-size: 36px;
+      letter-spacing: 4px;
+      color: #FFD700;
+      text-shadow: 0 0 20px #FFD700;
+    }
+
+    .ticker {
+      width: 90%;
+      height: 70vh;
+      border: 3px solid #FFD700;
+      overflow: hidden;
+      position: relative;
+      background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
+      box-shadow: 0 0 30px #FFD700;
+    }
+
+    .ticker-item {
+      padding: 20px;
+      margin: 10px 0;
+      font-size: 40px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      white-space: nowrap;
+      animation: slideUp 4s ease-in forwards;
+    }
+
+    .ticker-item.buy {
+      color: #00FF00;
+      text-shadow: 0 0 10px #00FF00;
+    }
+
+    .ticker-item.sell {
+      color: #FF0000;
+      text-shadow: 0 0 10px #FF0000;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 1;
+        transform: translateY(100vh);
+      }
+      to {
+        opacity: 0;
+        transform: translateY(-100vh);
+      }
+    }
+
+    .scanlines {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.03),
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      animation: flicker 0.15s infinite;
+    }
+
+    @keyframes flicker {
+      0%, 100% { opacity: 0.98; }
+      50% { opacity: 1; }
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #666666;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">🐋 WHALE FLOW</div>
+    
+    <div class="ticker" id="ticker">
+      <div class="scanlines"></div>
+    </div>
+
+    <div class="footer">
+      Solana Whale Tracker - Real-time Digital Art Edition
+    </div>
+  </div>
+
+  <script>
+    // ダミーデータ（実際には API から取得）
+    const whaleTransactions = [
+      { amount: '125,500', token: 'SOL', type: 'BUY', exchange: 'RAYDIUM' },
+      { amount: '89,300', token: 'SOL', type: 'SELL', exchange: 'JUPITER' },
+      { amount: '250,000', token: 'COPE', type: 'BUY', exchange: 'PUMPFUN' },
+      { amount: '45,600', token: 'SOL', type: 'SELL', exchange: 'RAYDIUM' },
+      { amount: '320,000', token: 'BONK', type: 'BUY', exchange: 'JUPITER' },
+      { amount: '78,900', token: 'SOL', type: 'SELL', exchange: 'PUMPFUN' },
+      { amount: '155,200', token: 'RENDER', type: 'BUY', exchange: 'RAYDIUM' },
+      { amount: '92,400', token: 'SOL', type: 'SELL', exchange: 'JUPITER' },
+    ];
+
+    let currentIndex = 0;
+
+    function addTransaction() {
+      const ticker = document.getElementById('ticker');
+      const transaction = whaleTransactions[currentIndex % whaleTransactions.length];
+      
+      const item = document.createElement('div');
+      item.className = `ticker-item ${transaction.type.toLowerCase()}`;
+      item.textContent = `🐋 ${transaction.amount} ${transaction.token} | ${transaction.type} | ${transaction.exchange}`;
+      
+      ticker.appendChild(item);
+
+      // 古いアイテムを削除（最新 5 個だけ保持）
+      const items = ticker.querySelectorAll('.ticker-item');
+      if (items.length > 5) {
+        items[0].remove();
+      }
+
+      currentIndex++;
+
+      // 警告音
+      playBeep();
+    }
+
+    function playBeep() {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 1000; // 1000Hz
+      oscillator.type = 'sine';
+
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.1);
+    }
+
+    // 3 秒ごとに新しいトランザクションを追加
+    setInterval(addTransaction, 3000);
+
+    // 初期表示
+    addTransaction();
+  </script>
+</body>
+</html>
