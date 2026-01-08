@@ -1,218 +1,179 @@
-<!DOCTYPE html>
+html<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WHALE FLOW - Solana Whale Tracker</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PROTOCOL STOIC">
+    <title>PROTOCOL STOIC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      background-color: #000000;
-      color: #FFFFFF;
-      font-family: 'Courier New', monospace;
-      font-weight: bold;
-      overflow: hidden;
-      font-size: 32px;
-      letter-spacing: 2px;
-    }
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-    .container {
-      width: 100%;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 40px;
-    }
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
 
-    .header {
-      font-size: 48px;
-      color: #FFD700;
-      margin-bottom: 60px;
-      text-shadow: 0 0 20px #FFD700;
-      letter-spacing: 4px;
-    }
+        .header {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 0.5px solid #333333;
+        }
 
-    .ticker-container {
-      width: 90%;
-      max-width: 1200px;
-      height: 60vh;
-      overflow: hidden;
-      position: relative;
-      border: 2px solid #FFD700;
-      padding: 20px;
-      background: #0a0a0a;
-    }
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
 
-    .ticker-item {
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 20px;
-      margin: 10px 0;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 4px;
-      animation: slideUpBounce 3s ease-out forwards;
-      gap: 40px;
-    }
+        .quote-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            user-select: none;
+            margin-top: 60px;
+            margin-bottom: 100px;
+        }
 
-    .ticker-item.buy .type {
-      color: #00FF00;
-      text-shadow: 0 0 10px #00FF00;
-    }
+        .quote-text {
+            font-size: 28px;
+            font-weight: 600;
+            line-height: 1.5;
+            color: #32D74B;
+            text-shadow: 0 0 20px rgba(50, 215, 75, 0.3);
+            transition: all 0.3s ease;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    .ticker-item.sell .type {
-      color: #FF0000;
-      text-shadow: 0 0 10px #FF0000;
-    }
+        .quote-box:active .quote-text {
+            transform: scale(0.95);
+            color: #FFFFFF;
+        }
 
-    .amount {
-      flex: 1;
-      text-align: left;
-      color: #FFFFFF;
-      min-width: 200px;
-    }
+        .tap-indicator {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #666666;
+            letter-spacing: 0.5px;
+        }
 
-    .type {
-      flex: 1;
-      text-align: center;
-      font-weight: bold;
-      font-size: 36px;
-      min-width: 150px;
-    }
-
-    .exchange {
-      flex: 1;
-      text-align: center;
-      color: #FFFFFF;
-      min-width: 150px;
-    }
-
-    .time {
-      flex: 1;
-      text-align: right;
-      color: #999999;
-      font-size: 28px;
-      min-width: 150px;
-    }
-
-    @keyframes slideUpBounce {
-      0% {
-        transform: translateY(100vh) scale(0.9);
-        opacity: 0;
-      }
-      60% {
-        transform: translateY(0) scale(1.05);
-        opacity: 1;
-      }
-      80% {
-        transform: translateY(0) scale(0.95);
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100vh);
-        opacity: 0;
-      }
-    }
-
-    .footer {
-      margin-top: 40px;
-      color: #666666;
-      font-size: 14px;
-    }
-  </style>
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 20px;
+            text-align: center;
+            border-top: 0.5px solid #333333;
+            font-size: 12px;
+            color: #666666;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">🐋 WHALE FLOW</div>
-    
-    <div class="ticker-container" id="ticker"></div>
+    <div class="header">
+        <h1>🐋 PROTOCOL STOIC</h1>
+    </div>
+
+    <div class="container">
+        <div class="quote-box" id="quoteBox">
+            <div class="quote-text" id="quoteText">
+                "The trend is your friend."
+            </div>
+            <div class="tap-indicator">TAP TO LOAD WISDOM</div>
+        </div>
+    </div>
 
     <div class="footer">
-      Solana Whale Tracker - Real-time Digital Art Edition
+        Solana Trader's Mental Guard
     </div>
-  </div>
 
-  <script>
-    // ダミートランザクションデータ
-    const transactions = [
-      { amount: '125.5 SOL', type: 'BUY', exchange: 'RAYDIUM', buy: true },
-      { amount: '89.3 SOL', type: 'SELL', exchange: 'JUPITER', buy: false },
-      { amount: '250K COPE', type: 'BUY', exchange: 'PUMPFUN', buy: true },
-      { amount: '45.6 SOL', type: 'SELL', exchange: 'RAYDIUM', buy: false },
-      { amount: '320K BONK', type: 'BUY', exchange: 'JUPITER', buy: true },
-      { amount: '78.9 SOL', type: 'SELL', exchange: 'PUMPFUN', buy: false },
-      { amount: '155.2 RENDER', type: 'BUY', exchange: 'RAYDIUM', buy: true },
-      { amount: '92.4 SOL', type: 'SELL', exchange: 'JUPITER', buy: false },
-      { amount: '410K ORCA', type: 'BUY', exchange: 'PUMPFUN', buy: true },
-      { amount: '67.8 SOL', type: 'SELL', exchange: 'RAYDIUM', buy: false },
-    ];
+    <script>
+        const quotes = [
+            "The trend is your friend.",
+            "Patience is the currency of the wise.",
+            "Do not confuse luck with skill.",
+            "Buy the fear, sell the greed.",
+            "Your emotions are your enemy.",
+            "Touch grass.",
+            "HODL is not a strategy, it's discipline.",
+            "Volatility is the price of admission.",
+            "Charts don't lie, traders do.",
+            "The best trade is the one you didn't make.",
+            "Risk management is not risk avoidance.",
+            "In volatility, there is opportunity.",
+            "Revenge trading is the trader's suicide.",
+            "The market punishes the overconfident.",
+            "Position size determines your fate.",
+            "Never trade with money you need.",
+            "Losses are tuition in the market.",
+            "Discipline beats luck every time.",
+            "The chart is the truth.",
+            "Profit is secondary to preservation."
+        ];
 
-    let index = 0;
+        const quoteBox = document.getElementById('quoteBox');
+        const quoteText = document.getElementById('quoteText');
+        let currentIndex = 0;
 
-    function getTime() {
-      const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      const seconds = String(now.getSeconds()).padStart(2, '0');
-      return `${hours}:${minutes}:${seconds}`;
-    }
+        function displayQuote() {
+            quoteText.textContent = `"${quotes[currentIndex]}"`;
+            currentIndex = (currentIndex + 1) % quotes.length;
+        }
 
-    function playSound() {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
+        function vibrate() {
+            if (navigator.vibrate) {
+                navigator.vibrate([30, 50, 30]);
+            }
+        }
 
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
+        quoteBox.addEventListener('click', () => {
+            vibrate();
+            quoteText.style.opacity = '0.5';
+            setTimeout(() => {
+                displayQuote();
+                quoteText.style.opacity = '1';
+            }, 100);
+        });
 
-      oscillator.frequency.value = 800;
-      oscillator.type = 'square';
+        quoteBox.addEventListener('touchstart', (e) => {
+            e.target.style.transform = 'scale(0.95)';
+        });
 
-      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+        quoteBox.addEventListener('touchend', (e) => {
+            e.target.style.transform = 'scale(1)';
+        });
 
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.15);
-    }
-
-    function addTransaction() {
-      const ticker = document.getElementById('ticker');
-      const tx = transactions[index % transactions.length];
-      
-      const item = document.createElement('div');
-      item.className = `ticker-item ${tx.buy ? 'buy' : 'sell'}`;
-      
-      item.innerHTML = `
-        <div class="amount">${tx.amount}</div>
-        <div class="type">${tx.type}</div>
-        <div class="exchange">${tx.exchange}</div>
-        <div class="time">${getTime()}</div>
-      `;
-      
-      ticker.appendChild(item);
-
-      // 古いアイテムを削除（最新 5 個だけ保持）
-      const items = ticker.querySelectorAll('.ticker-item');
-      if (items.length > 5) {
-        items[0].remove();
-      }
-
-      index++;
-      playSound();
-    }
-
-    // 3秒ごとに新しいトランザクション追加
-    setInterval(addTransaction, 3000);
-
-    // 初期表示
-    addTransaction();
-  </script>
+        // 初期表示
+        displayQuote();
+    </script>
 </body>
 </html>
