@@ -13,11 +13,12 @@
 
     body {
       background-color: #000000;
-      color: #FFD700;
+      color: #FFFFFF;
       font-family: 'Courier New', monospace;
+      font-weight: bold;
       overflow: hidden;
-      font-size: 48px;
-      line-height: 1.8;
+      font-size: 32px;
+      letter-spacing: 2px;
     }
 
     .container {
@@ -27,86 +28,103 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
+      padding: 40px;
     }
 
     .header {
-      text-align: center;
-      margin-bottom: 40px;
-      font-size: 36px;
-      letter-spacing: 4px;
+      font-size: 48px;
       color: #FFD700;
+      margin-bottom: 60px;
       text-shadow: 0 0 20px #FFD700;
+      letter-spacing: 4px;
     }
 
-    .ticker {
+    .ticker-container {
       width: 90%;
-      height: 70vh;
-      border: 3px solid #FFD700;
+      max-width: 1200px;
+      height: 60vh;
       overflow: hidden;
       position: relative;
-      background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%);
-      box-shadow: 0 0 30px #FFD700;
+      border: 2px solid #FFD700;
+      padding: 20px;
+      background: #0a0a0a;
     }
 
     .ticker-item {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
       padding: 20px;
       margin: 10px 0;
-      font-size: 40px;
-      font-weight: bold;
-      letter-spacing: 2px;
-      white-space: nowrap;
-      animation: slideUp 4s ease-in forwards;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 4px;
+      animation: slideUpBounce 3s ease-out forwards;
+      gap: 40px;
     }
 
-    .ticker-item.buy {
+    .ticker-item.buy .type {
       color: #00FF00;
       text-shadow: 0 0 10px #00FF00;
     }
 
-    .ticker-item.sell {
+    .ticker-item.sell .type {
       color: #FF0000;
       text-shadow: 0 0 10px #FF0000;
     }
 
-    @keyframes slideUp {
-      from {
-        opacity: 1;
-        transform: translateY(100vh);
-      }
-      to {
+    .amount {
+      flex: 1;
+      text-align: left;
+      color: #FFFFFF;
+      min-width: 200px;
+    }
+
+    .type {
+      flex: 1;
+      text-align: center;
+      font-weight: bold;
+      font-size: 36px;
+      min-width: 150px;
+    }
+
+    .exchange {
+      flex: 1;
+      text-align: center;
+      color: #FFFFFF;
+      min-width: 150px;
+    }
+
+    .time {
+      flex: 1;
+      text-align: right;
+      color: #999999;
+      font-size: 28px;
+      min-width: 150px;
+    }
+
+    @keyframes slideUpBounce {
+      0% {
+        transform: translateY(100vh) scale(0.9);
         opacity: 0;
-        transform: translateY(-100vh);
       }
-    }
-
-    .scanlines {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      background: repeating-linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.03),
-        rgba(255, 255, 255, 0.03) 1px,
-        transparent 1px,
-        transparent 2px
-      );
-      animation: flicker 0.15s infinite;
-    }
-
-    @keyframes flicker {
-      0%, 100% { opacity: 0.98; }
-      50% { opacity: 1; }
+      60% {
+        transform: translateY(0) scale(1.05);
+        opacity: 1;
+      }
+      80% {
+        transform: translateY(0) scale(0.95);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh);
+        opacity: 0;
+      }
     }
 
     .footer {
-      margin-top: 20px;
-      font-size: 16px;
+      margin-top: 40px;
       color: #666666;
-      text-align: center;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -114,9 +132,7 @@
   <div class="container">
     <div class="header">🐋 WHALE FLOW</div>
     
-    <div class="ticker" id="ticker">
-      <div class="scanlines"></div>
-    </div>
+    <div class="ticker-container" id="ticker"></div>
 
     <div class="footer">
       Solana Whale Tracker - Real-time Digital Art Edition
@@ -124,27 +140,61 @@
   </div>
 
   <script>
-    // ダミーデータ（実際には API から取得）
-    const whaleTransactions = [
-      { amount: '125,500', token: 'SOL', type: 'BUY', exchange: 'RAYDIUM' },
-      { amount: '89,300', token: 'SOL', type: 'SELL', exchange: 'JUPITER' },
-      { amount: '250,000', token: 'COPE', type: 'BUY', exchange: 'PUMPFUN' },
-      { amount: '45,600', token: 'SOL', type: 'SELL', exchange: 'RAYDIUM' },
-      { amount: '320,000', token: 'BONK', type: 'BUY', exchange: 'JUPITER' },
-      { amount: '78,900', token: 'SOL', type: 'SELL', exchange: 'PUMPFUN' },
-      { amount: '155,200', token: 'RENDER', type: 'BUY', exchange: 'RAYDIUM' },
-      { amount: '92,400', token: 'SOL', type: 'SELL', exchange: 'JUPITER' },
+    // ダミートランザクションデータ
+    const transactions = [
+      { amount: '125.5 SOL', type: 'BUY', exchange: 'RAYDIUM', buy: true },
+      { amount: '89.3 SOL', type: 'SELL', exchange: 'JUPITER', buy: false },
+      { amount: '250K COPE', type: 'BUY', exchange: 'PUMPFUN', buy: true },
+      { amount: '45.6 SOL', type: 'SELL', exchange: 'RAYDIUM', buy: false },
+      { amount: '320K BONK', type: 'BUY', exchange: 'JUPITER', buy: true },
+      { amount: '78.9 SOL', type: 'SELL', exchange: 'PUMPFUN', buy: false },
+      { amount: '155.2 RENDER', type: 'BUY', exchange: 'RAYDIUM', buy: true },
+      { amount: '92.4 SOL', type: 'SELL', exchange: 'JUPITER', buy: false },
+      { amount: '410K ORCA', type: 'BUY', exchange: 'PUMPFUN', buy: true },
+      { amount: '67.8 SOL', type: 'SELL', exchange: 'RAYDIUM', buy: false },
     ];
 
-    let currentIndex = 0;
+    let index = 0;
+
+    function getTime() {
+      const now = new Date();
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      return `${hours}:${minutes}:${seconds}`;
+    }
+
+    function playSound() {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = 800;
+      oscillator.type = 'square';
+
+      gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.15);
+    }
 
     function addTransaction() {
       const ticker = document.getElementById('ticker');
-      const transaction = whaleTransactions[currentIndex % whaleTransactions.length];
+      const tx = transactions[index % transactions.length];
       
       const item = document.createElement('div');
-      item.className = `ticker-item ${transaction.type.toLowerCase()}`;
-      item.textContent = `🐋 ${transaction.amount} ${transaction.token} | ${transaction.type} | ${transaction.exchange}`;
+      item.className = `ticker-item ${tx.buy ? 'buy' : 'sell'}`;
+      
+      item.innerHTML = `
+        <div class="amount">${tx.amount}</div>
+        <div class="type">${tx.type}</div>
+        <div class="exchange">${tx.exchange}</div>
+        <div class="time">${getTime()}</div>
+      `;
       
       ticker.appendChild(item);
 
@@ -154,31 +204,11 @@
         items[0].remove();
       }
 
-      currentIndex++;
-
-      // 警告音
-      playBeep();
+      index++;
+      playSound();
     }
 
-    function playBeep() {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-
-      oscillator.frequency.value = 1000; // 1000Hz
-      oscillator.type = 'sine';
-
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + 0.1);
-    }
-
-    // 3 秒ごとに新しいトランザクションを追加
+    // 3秒ごとに新しいトランザクション追加
     setInterval(addTransaction, 3000);
 
     // 初期表示
