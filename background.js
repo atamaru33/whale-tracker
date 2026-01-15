@@ -70,16 +70,26 @@ async function checkNotifications() {
 
     // その他のエラー
     if (!response.ok) {
+      const errorText = await response.text();
       console.error(`❌ API Error: ${response.status}`);
+      console.error(`❌ Error response:`, errorText);
       isPolling = false;
       return;
     }
 
+    console.log(`✅ API Status: ${response.status}`);
+    console.log(`✅ API URL: ${API_URL}`);
+
     const data = await response.json();
+
+    // デバッグ: 実際のレスポンスを表示
+    console.log('📦 API Response:', JSON.stringify(data, null, 2));
 
     // レスポンスが配列でない場合はエラー
     if (!Array.isArray(data)) {
       console.error('❌ Invalid API response format');
+      console.error('❌ Response type:', typeof data);
+      console.error('❌ Response data:', data);
       isPolling = false;
       return;
     }
