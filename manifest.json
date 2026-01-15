@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Orynth Whale Tracker",
+  "version": "1.0.0",
+  "description": "超低レイテンシのOrynth新着通知トラッカー - フォローユーザーの新規プロダクトローンチを3秒ごとに監視",
+  "permissions": [
+    "notifications",
+    "alarms",
+    "storage"
+  ],
+  "host_permissions": [
+    "https://www.orynth.dev/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🐋</text></svg>",
+    "48": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🐋</text></svg>",
+    "128": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='0.9em' font-size='90'>🐋</text></svg>"
+  }
+}
